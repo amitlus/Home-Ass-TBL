@@ -1,0 +1,17 @@
+### Gradle ###
+.gradle/
+build/
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+*.log
+
+# OS-generated files
+Thumbs.db
+ehthumbs.db
+Icon?
