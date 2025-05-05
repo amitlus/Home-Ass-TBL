@@ -1,17 +1,18 @@
-### Gradle ###
-.gradle/
-build/
-
-### IntelliJ IDEA ###
+# IDEs
 .idea/
 *.iml
-*.ipr
-*.iws
+
+# Build outputs
+/build/
+out/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Gradle wrappers
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
 
 # Logs
 *.log
-
-# OS-generated files
-Thumbs.db
-ehthumbs.db
-Icon?
