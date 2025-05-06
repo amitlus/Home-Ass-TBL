@@ -7,7 +7,6 @@ import java.util.*;
 
 public class InvoiceParser {
 
-
     private static final int DIGIT_WIDTH = 3;
     private static final int DIGITS_PER_LINE = 9;
     private static final int LINE_LENGTH = DIGIT_WIDTH * DIGITS_PER_LINE;
@@ -77,14 +76,14 @@ public class InvoiceParser {
     public static void main(String[] args) throws IOException {
         // Question 1A
         parseFileAndWriteOutput(
-                Path.of("src/main/resources/input_Q1a.txt"),
-                Path.of("src/main/resources/code_output_Q1a_output.txt")
+                Path.of("src/main/resources/invoice/input_Q1a.txt"),
+                Path.of("src/main/resources/invoice/code_output_Q1a_output.txt")
         );
 
         // Question 1B
         parseFileAndWriteOutput(
-                Path.of("src/main/resources/input_Q1b.txt"),
-                Path.of("src/main/resources/code_output_Q1b_output.txt")
+                Path.of("src/main/resources/invoice/input_Q1b.txt"),
+                Path.of("src/main/resources/invoice/code_output_Q1b_output.txt")
         );
     }
 
