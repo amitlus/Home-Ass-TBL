@@ -48,7 +48,11 @@ public class WordsCounter {
                 String[] words = line.trim().split("\\s+");
                 for (String word : words) {
                     if (!word.isEmpty()) {
-                        wordCountMap.compute(word.toLowerCase(), (k, v) -> (v == null) ? 1 : v + 1);
+                        String lowerCaseWord = word.toLowerCase();
+                        Integer prev = wordCountMap.putIfAbsent(lowerCaseWord, 1);
+                        if (prev != null) {
+                            wordCountMap.compute(lowerCaseWord, (k, v) -> v + 1);
+                        }
                     }
                 }
             }
