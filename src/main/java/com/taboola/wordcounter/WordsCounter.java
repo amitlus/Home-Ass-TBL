@@ -1,5 +1,7 @@
 package com.taboola.wordcounter;
 
+import lombok.Getter;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,17 +10,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class WordsCounter {
+    @Getter
     private final ConcurrentHashMap<String, Integer> wordCountMap = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
         WordsCounter wc = new WordsCounter();
-        // Example file paths – update these with your actual paths or test inputs
-        wc.load("file1.txt", "file2.txt", "file3.txt");
+        wc.load("src/main/resources/wordcounter/my_file1.txt",
+                "src/main/resources/wordcounter/my_file2.txt",
+                "src/main/resources/wordcounter/my_file3.txt");
+
         wc.displayStatus();
     }
 
     public void load(String... filenames) {
-        ExecutorService executor = Executors.newFixedThreadPool(filenames.length);
+        ExecutorService executor = Executors.newWorkStealingPool();
 
         for (String filename : filenames) {
             executor.submit(() -> processFile(filename));
@@ -27,7 +32,7 @@ public class WordsCounter {
         executor.shutdown();
         while (!executor.isTerminated()) {
             try {
-                Thread.sleep(100); // wait for tasks to finish
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.err.println("Thread interrupted while waiting: " + e.getMessage());
@@ -43,7 +48,7 @@ public class WordsCounter {
                 String[] words = line.trim().split("\\s+");
                 for (String word : words) {
                     if (!word.isEmpty()) {
-                        wordCountMap.compute(word, (k, v) -> (v == null) ? 1 : v + 1);
+                        wordCountMap.compute(word.toLowerCase(), (k, v) -> (v == null) ? 1 : v + 1);
                     }
                 }
             }
