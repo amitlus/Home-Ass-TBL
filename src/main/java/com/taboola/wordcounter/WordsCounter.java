@@ -15,23 +15,14 @@ public class WordsCounter {
     @Getter
     private final ConcurrentHashMap<String, Integer> wordCountMap = new ConcurrentHashMap<>();
 
-    public static void main(String[] args) {
-        WordsCounter wc = new WordsCounter();
-        wc.load("src/main/resources/wordcounter/my_file1.txt",
-                "src/main/resources/wordcounter/my_file2.txt",
-                "src/main/resources/wordcounter/my_file3.txt");
-
-        wc.displayStatus();
-    }
-
     public void load(String... filenames) {
         ExecutorService executor = Executors.newWorkStealingPool();
 
         for (String filename : filenames) {
             executor.submit(() -> processFile(filename));
         }
-
         executor.shutdown();
+
         try {
             int timeoutMilliSeconds = Math.max(1, filenames.length) * 100;
             if (!executor.awaitTermination(timeoutMilliSeconds, TimeUnit.MILLISECONDS)) {
@@ -62,7 +53,6 @@ public class WordsCounter {
         }
     }
 
-
     public void displayStatus() {
         int total = 0;
         for (var entry : wordCountMap.entrySet()) {
@@ -70,5 +60,14 @@ public class WordsCounter {
             total += entry.getValue();
         }
         System.out.println("** total: " + total);
+    }
+
+    public static void main(String[] args) {
+        WordsCounter wc = new WordsCounter();
+        wc.load("src/main/resources/wordcounter/file1.txt",
+                "src/main/resources/wordcounter/file2.txt",
+                "src/main/resources/wordcounter/file3.txt");
+
+        wc.displayStatus();
     }
 }
