@@ -6,13 +6,6 @@
 /build/
 out/
 
-# OS files
-.DS_Store
-Thumbs.db
-
 # Gradle wrappers
 .gradle/
 !gradle/wrapper/gradle-wrapper.jar
-
-# Logs
-*.log
