@@ -13,9 +13,9 @@ class WordsCounterTest {
         WordsCounter wc = new WordsCounter();
 
         wc.load(
-                "src/main/resources/wordcounter/file1.txt",
-                "src/main/resources/wordcounter/file2.txt",
-                "src/main/resources/wordcounter/file3.txt"
+                "src/test/resources/wordcounter/file1.txt",
+                "src/test/resources/wordcounter/file2.txt",
+                "src/test/resources/wordcounter/file3.txt"
         );
 
         Map<String, Integer> result = wc.getWordCountMap();
@@ -40,9 +40,9 @@ class WordsCounterTest {
         WordsCounter wc = new WordsCounter();
 
         wc.load(
-                "src/main/resources/wordcounter/my_file1.txt",
-                "src/main/resources/wordcounter/my_file2.txt",
-                "src/main/resources/wordcounter/my_file3.txt"
+                "src/test/resources/wordcounter/my_file1.txt",
+                "src/test/resources/wordcounter/my_file2.txt",
+                "src/test/resources/wordcounter/my_file3.txt"
         );
 
         Map<String, Integer> result = wc.getWordCountMap();
