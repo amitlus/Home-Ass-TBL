@@ -12,28 +12,28 @@ class InvoiceParserTest {
 
     @Test
     void parsesValidInvoicesCorrectly() throws Exception {
-        Path inputPath = Paths.get("src/test/resources/invoice/input_Q1a.txt");
-        Path expectedOutputPath = Paths.get("src/test/resources/invoice/output_Q1a.txt");
+        Path invoiceInputPath  = Paths.get("src/test/resources/invoice/input_Q1a.txt");
+        Path expectedParsedInvoicePath  = Paths.get("src/test/resources/invoice/output_Q1a.txt");
 
-        List<String> actualOutput = InvoiceParser.parseTextFile(inputPath);
-        List<String> expectedOutput = Files.readAllLines(expectedOutputPath);
+        List<String> actualParsedInvoices  = InvoiceParser.parseTextFile(invoiceInputPath );
+        List<String> expectedParsedInvoices  = Files.readAllLines(expectedParsedInvoicePath );
 
-        assertThat(actualOutput)
+        assertThat(actualParsedInvoices )
                 .as("Check that valid invoices are parsed correctly")
-                .containsExactlyElementsOf(expectedOutput);
+                .containsExactlyElementsOf(expectedParsedInvoices );
     }
 
     @Test
     void marksUnrecognizableDigitsAsIllegal() throws Exception {
-        Path inputPath = Paths.get("src/test/resources/invoice/input_Q1b.txt");
-        Path expectedOutputPath = Paths.get("src/test/resources/invoice/output_Q1b.txt");
+        Path invoiceInputPath = Paths.get("src/test/resources/invoice/input_Q1b.txt");
+        Path expectedParsedInvoicePath = Paths.get("src/test/resources/invoice/output_Q1b.txt");
 
-        List<String> actualOutput = InvoiceParser.parseTextFile(inputPath);
-        List<String> expectedOutput = Files.readAllLines(expectedOutputPath);
+        List<String> actualParsedInvoices = InvoiceParser.parseTextFile(invoiceInputPath);
+        List<String> expectedParsedInvoices = Files.readAllLines(expectedParsedInvoicePath);
 
-        assertThat(actualOutput)
+        assertThat(actualParsedInvoices)
                 .as("Check that invoices with illegal digits are marked correctly & replaced with '?")
-                .containsExactlyElementsOf(expectedOutput);
+                .containsExactlyElementsOf(expectedParsedInvoices);
     }
 
     @Test

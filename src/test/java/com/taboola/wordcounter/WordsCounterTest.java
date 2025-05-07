@@ -18,9 +18,9 @@ class WordsCounterTest {
                 "src/test/resources/wordcounter/file3.txt"
         );
 
-        Map<String, Integer> result = wc.getWordCountMap();
+        Map<String, Integer> wordCount = wc.getWordCountMap();
 
-        assertThat(result)
+        assertThat(wordCount)
                 .containsEntry("and", 1)
                 .containsEntry("file", 3)
                 .containsEntry("first", 1)
@@ -31,7 +31,7 @@ class WordsCounterTest {
                 .containsEntry("third", 1)
                 .containsEntry("this", 3);
 
-        int totalWords = result.values().stream().mapToInt(Integer::intValue).sum();
+        int totalWords = wordCount.values().stream().mapToInt(Integer::intValue).sum();
         assertThat(totalWords).isEqualTo(17);
     }
 
@@ -45,16 +45,16 @@ class WordsCounterTest {
                 "src/test/resources/wordcounter/my_file3.txt"
         );
 
-        Map<String, Integer> result = wc.getWordCountMap();
+        Map<String, Integer> wordCount = wc.getWordCountMap();
 
-        assertThat(result)
+        assertThat(wordCount)
                 .containsEntry("the", 11)
                 .containsEntry("your", 5)
                 .containsEntry("i", 5)
                 .containsEntry("productivity", 1)
                 .containsEntry("quiet", 2);
 
-        int totalWords = result.values().stream().mapToInt(Integer::intValue).sum();
+        int totalWords = wordCount.values().stream().mapToInt(Integer::intValue).sum();
         assertThat(totalWords).isEqualTo(268);
     }
 
