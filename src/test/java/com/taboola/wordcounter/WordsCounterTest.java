@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WordsCounterTest {
 
     @Test
-    void testWordCountingAcrossTheGivenFiles() {
+    void testWordCountingAcrossExampleFiles() {
         WordsCounter wc = new WordsCounter();
 
         wc.load(
