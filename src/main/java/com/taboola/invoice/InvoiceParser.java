@@ -1,90 +1,99 @@
 package com.taboola.invoice;
 
+import lombok.RequiredArgsConstructor;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+
+@RequiredArgsConstructor
 public class InvoiceParser {
 
-    private static final int DIGIT_WIDTH = 3;
-    private static final int DIGITS_PER_LINE = 9;
-    private static final int LINE_LENGTH = DIGIT_WIDTH * DIGITS_PER_LINE;
+    private final DigitRecognizer recognizer;
 
-    private static final Map<String, Character> DIGIT_MAP = Map.ofEntries(
-            Map.entry(" _ | ||_|", '0'),
-            Map.entry("     |  |", '1'),
-            Map.entry(" _  _||_ ", '2'),
-            Map.entry(" _  _| _|", '3'),
-            Map.entry("   |_|  |", '4'),
-            Map.entry(" _ |_  _|", '5'),
-            Map.entry(" _ |_ |_|", '6'),
-            Map.entry(" _   |  |", '7'),
-            Map.entry(" _ |_||_|", '8'),
-            Map.entry(" _ |_| _|", '9')
-    );
-
-    public static void parseFileAndWriteOutput(Path inputPath, Path outputPath) throws IOException {
-        List<String> parsedInvoices = parseTextFile(inputPath);
-        Files.write(outputPath, parsedInvoices);
-    }
-
-    public static List<String> parseTextFile(Path inputPath) throws IOException {
-        List<String> inputLines = Files.readAllLines(inputPath);
+    public List<String> parseTextFile(Path inputPath) throws IOException {
         List<String> parsedInvoices = new ArrayList<>();
 
-        for (int i = 0; i < inputLines.size(); i += 4) {
-            String line1 = inputLines.get(i);
-            String line2 = inputLines.get(i + 1);
-            String line3 = inputLines.get(i + 2);
-            String line4 = inputLines.get(i + 3);
+        int digitWidth = recognizer.getDigitWidth();
+        int lineLength = recognizer.getLineLength();
+        int digitLines = recognizer.getDigitLineCount();
+        int linesPerEntry = recognizer.getLinesPerEntry();
 
-            if (line1.length() != LINE_LENGTH || line2.length() != LINE_LENGTH || line3.length() != LINE_LENGTH) {
-                throw new IllegalArgumentException("Each invoice line must be exactly 27 characters long");
+        try (BufferedReader reader = Files.newBufferedReader(inputPath)) {
+            List<String> lines;
+            while ((lines = readInvoiceBlock(reader, linesPerEntry)) != null) {
+                if (lines.size() < linesPerEntry) {
+                    throw new IllegalArgumentException("Incomplete invoice block: expected " + linesPerEntry + " lines, but got " + lines.size());
+                }
+
+                for (int i = 0; i < digitLines; i++) {
+                    if (lines.get(i).length() != lineLength) {
+                        throw new IllegalArgumentException("Each invoice line must be exactly " + lineLength + " characters long");
+                    }
+                }
+                if (!lines.get(linesPerEntry - 1).isBlank()) {
+                    throw new IllegalArgumentException("The last line in each invoice block must be blank");
+                }
+
+                parsedInvoices.add(parseInvoiceEntry(lines.subList(0, digitLines), digitWidth, lineLength));
             }
-
-            if (!line4.isBlank()) {
-                throw new IllegalArgumentException("The 4th line in each invoice block must be blank");
-            }
-
-            parsedInvoices.add(parseInvoiceEntry(line1, line2, line3));
         }
 
         return parsedInvoices;
     }
 
-    private static String parseInvoiceEntry(String line1, String line2, String line3) {
+    private static List<String> readInvoiceBlock(BufferedReader reader, int linesPerEntry) throws IOException {
+        List<String> lines = new ArrayList<>();
+        for (int i = 0; i < linesPerEntry; i++) {
+            String line = reader.readLine();
+            if (line == null) {
+                break;
+            }
+            lines.add(line);
+        }
+        return lines.isEmpty() ? null : lines;
+    }
+
+    private String parseInvoiceEntry(List<String> digitLines, int digitWidth, int lineLength) {
         StringBuilder invoiceNumber = new StringBuilder();
         boolean containsIllegalDigit = false;
 
-        for (int i = 0; i < LINE_LENGTH; i += DIGIT_WIDTH) {
-            String digitPattern = line1.substring(i, i + 3)
-                    + line2.substring(i, i + 3)
-                    + line3.substring(i, i + 3);
-            Character digit = DIGIT_MAP.get(digitPattern);
-            if (digit == null) {
-                invoiceNumber.append('?');
-                containsIllegalDigit = true;
-            } else {
-                invoiceNumber.append(digit);
+        for (int i = 0; i < lineLength; i += digitWidth) {
+            StringBuilder digitPattern = new StringBuilder();
+            for (String line : digitLines) {
+                digitPattern.append(line, i, i + digitWidth);
             }
+            char digit = recognizer.recognize(digitPattern.toString());
+            if (digit == '?') {
+                containsIllegalDigit = true;
+            }
+            invoiceNumber.append(digit);
         }
 
         return containsIllegalDigit ? invoiceNumber + " ILLEGAL" : invoiceNumber.toString();
     }
 
+    public static void parseAndWriteWithSevenSegmentRecognizer(Path inputPath, Path outputPath) throws IOException {
+        InvoiceParser parser = new InvoiceParser(DigitRecognizerFactory.getRecognizer("seven-segment"));
+        List<String> parsedInvoices = parser.parseTextFile(inputPath);
+        Files.write(outputPath, parsedInvoices);
+    }
+
     public static void main(String[] args) throws IOException {
         // Question 1A
-        parseFileAndWriteOutput(
+        parseAndWriteWithSevenSegmentRecognizer(
                 Path.of("src/main/resources/invoice/input_Q1a.txt"),
                 Path.of("src/main/resources/invoice/code_output_Q1a_output.txt")
         );
 
         // Question 1B
-        parseFileAndWriteOutput(
+        parseAndWriteWithSevenSegmentRecognizer(
                 Path.of("src/main/resources/invoice/input_Q1b.txt"),
                 Path.of("src/main/resources/invoice/code_output_Q1b_output.txt")
         );
     }
-
 }
