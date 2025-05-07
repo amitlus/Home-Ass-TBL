@@ -39,10 +39,10 @@ class InvoiceParserTest {
     }
 
     @Test
-    void throwsOnLineTooShort() throws IOException {
+    void throwsOnLineTooShortInSevenSegmentRecognizer() throws IOException {
         Path input = Files.createTempFile("invoice", ".txt");
         Files.write(input, List.of(
-                " _  _  _  _  _  _  _  _ ",  // only 24 chars
+                " _  _  _  _  _  _  _  _ ",  // only 24 chars instead of 27
                 "| || || || || || || || |",
                 "|_||_||_||_||_||_||_||_|",
                 ""
